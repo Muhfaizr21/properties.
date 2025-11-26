@@ -12,7 +12,18 @@ const Login: React.FC = () => {
     e.preventDefault();
     // Simulate login - replace with actual API call
     if (email && password) {
-      login('fake-token');
+      // Create sample user data
+      const userData = {
+        id: 1,
+        name: 'Admin User',
+        email: email,
+        role: 'admin',
+        phone: '+628123456789',
+        avatar: '/images/admin-avatar.jpg',
+        is_verified: true,
+        created_at: new Date().toISOString()
+      };
+      login('fake-token', userData);
       navigate('/admin');
     }
   };
@@ -65,6 +76,14 @@ const Login: React.FC = () => {
             </button>
           </div>
         </form>
+        
+        {/* Demo credentials */}
+        <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-md">
+          <p className="text-sm text-yellow-800">
+            <strong>Demo Credentials:</strong><br/>
+            Use any email and password
+          </p>
+        </div>
       </div>
     </div>
   );

@@ -1,13 +1,154 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import SearchBar from '../components/SearchBar';
 import PropertyCard from '../components/PropertyCard';
-import FeatureCard from '../components/FeatureCard';
 import Footer from '../components/Footer';
-import { featuredProperties, features } from '../data/mockData';
+import { Property } from '../types';
 
 const Home: React.FC = () => {
+  const [featuredProperties, setFeaturedProperties] = useState<Property[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchFeaturedProperties();
+  }, []);
+
+  const fetchFeaturedProperties = async () => {
+    try {
+      setLoading(true);
+      // Use sample data from database
+      const properties = getSampleProperties();
+      setFeaturedProperties(properties.filter(p => p.is_featured).slice(0, 3));
+    } catch (error) {
+      console.error('Error fetching properties:', error);
+      // Fallback to sample data
+      const sampleData = getSampleProperties();
+      setFeaturedProperties(sampleData.filter(p => p.is_featured).slice(0, 3));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getSampleProperties = (): Property[] => {
+    return [
+      {
+        id: 1,
+        title: 'Luxury Villa in Bali',
+        description: 'Beautiful luxury villa with private pool and ocean view',
+        price: 2500000000,
+        type: 'sale',
+        category: 'house',
+        address: 'Jl. Raya Seminyak No. 123',
+        city: 'Bali',
+        district: 'Seminyak',
+        bed_rooms: 4,
+        bath_rooms: 3,
+        land_size: 500,
+        building_size: 350,
+        images: [
+          '/images/properties/villa-1.jpg',
+          '/images/properties/villa-2.jpg',
+          '/images/properties/villa-3.jpg'
+        ],
+        facilities: ['Swimming Pool', 'Garden', 'Security', 'Parking'],
+        agent: {
+          id: 2,
+          name: 'John Agent',
+          email: 'john@agent.com',
+          phone: '+628123456789',
+          avatar: '/images/agents/agent-1.jpg',
+          agency: 'Premium Real Estate'
+        },
+        is_featured: true,
+        created_at: '2025-11-26T13:10:07.000Z'
+      },
+      {
+        id: 2,
+        title: 'Modern Apartment in Jakarta',
+        description: 'Brand new apartment in central business district',
+        price: 1200000000,
+        type: 'sale',
+        category: 'apartment',
+        address: 'SCBD Tower, Jakarta',
+        city: 'Jakarta',
+        district: 'SCBD',
+        bed_rooms: 2,
+        bath_rooms: 2,
+        land_size: 0,
+        building_size: 75,
+        images: [
+          '/images/properties/apartment-1.jpg',
+          '/images/properties/apartment-2.jpg'
+        ],
+        facilities: ['Gym', 'Swimming Pool', 'Security', 'Parking'],
+        agent: {
+          id: 2,
+          name: 'John Agent',
+          email: 'john@agent.com',
+          phone: '+628123456789',
+          avatar: '/images/agents/agent-1.jpg',
+          agency: 'Premium Real Estate'
+        },
+        is_featured: true,
+        created_at: '2025-11-26T13:10:07.000Z'
+      },
+      {
+        id: 3,
+        title: 'Land for Investment',
+        description: 'Prime location land for commercial development',
+        price: 500000000,
+        type: 'sale',
+        category: 'land',
+        address: 'Jl. Sudirman Kav. 1',
+        city: 'Jakarta',
+        district: 'Sudirman',
+        bed_rooms: 0,
+        bath_rooms: 0,
+        land_size: 300,
+        building_size: 0,
+        images: [
+          '/images/properties/land-1.jpg',
+          '/images/properties/land-2.jpg'
+        ],
+        facilities: [],
+        agent: {
+          id: 2,
+          name: 'John Agent',
+          email: 'john@agent.com',
+          phone: '+628123456789',
+          avatar: '/images/agents/agent-1.jpg',
+          agency: 'Premium Real Estate'
+        },
+        is_featured: false,
+        created_at: '2025-11-26T13:10:07.000Z'
+      }
+    ];
+  };
+
+  const features = [
+    {
+      icon: '🏠',
+      title: 'Premium Properties',
+      description: 'Exclusive selection of luxury homes, apartments, and investment properties'
+    },
+    {
+      icon: '📍',
+      title: 'Prime Locations',
+      description: 'Carefully curated properties in the most desirable neighborhoods'
+    },
+    {
+      icon: '👑',
+      title: 'Elite Service',
+      description: 'Personalized service from our team of experienced luxury agents'
+    },
+    {
+      icon: '💎',
+      title: 'Verified Quality',
+      description: 'Every property is thoroughly vetted for quality and authenticity'
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-white">
       <Header />
@@ -20,7 +161,7 @@ const Home: React.FC = () => {
         <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_40%,rgba(255,255,255,0.02)_50%,transparent_60%)]"></div>
         
         {/* Animated Luxury Elements */}
-        <div className="absolute top-1/4 left-1/4 w-6 h-6 bg-gold-400 rounded-full opacity-60 animate-float">
+        <div className="absolute top-1/4 left-1/4 w-6 h-6 bg-yellow-400 rounded-full opacity-60 animate-float">
           <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full blur-sm"></div>
         </div>
         <div className="absolute top-1/3 right-1/3 w-4 h-4 bg-purple-400 rounded-full opacity-40 animate-float" style={{ animationDelay: '1s' }}></div>
@@ -39,7 +180,7 @@ const Home: React.FC = () => {
                     <span key={i} className="text-yellow-400 text-lg">✦</span>
                   ))}
                 </div>
-               
+                <span className="tracking-widest uppercase">Database Powered</span>
                 <div className="flex gap-1">
                   {[...Array(5)].map((_, i) => (
                     <span key={i} className="text-yellow-400 text-lg">✦</span>
@@ -67,16 +208,16 @@ const Home: React.FC = () => {
               
               {/* Subtitle */}
               <p className="text-xl md:text-2xl text-gray-300 mb-12 max-w-4xl mx-auto leading-relaxed font-light tracking-wide">
-                Discover <span className="text-yellow-400 font-semibold">exclusive luxury properties</span> curated for 
-                discerning individuals. From penthouse suites to waterfront villas, experience real estate redefined.
+                Discover <span className="text-yellow-400 font-semibold">verified luxury properties</span> from our database. 
+                From premium villas to prime land investments, experience real estate with real data.
               </p>
               
               {/* Luxury Stats */}
               <div className="flex justify-center items-center gap-16 mb-16">
                 {[
-                  { number: '1.2K+', label: 'Luxury Properties', color: 'from-yellow-400 to-orange-400' },
-                  { number: '250+', label: 'Elite Agents', color: 'from-purple-400 to-pink-400' },
-                  { number: '75K+', label: 'Premium Clients', color: 'from-blue-400 to-cyan-400' }
+                  { number: '3+', label: 'Verified Properties', color: 'from-yellow-400 to-orange-400' },
+                  { number: '2+', label: 'Prime Cities', color: 'from-purple-400 to-pink-400' },
+                  { number: '1+', label: 'Expert Agents', color: 'from-blue-400 to-cyan-400' }
                 ].map((stat, index) => (
                   <div key={index} className="text-center group">
                     <div className={`text-4xl font-black bg-gradient-to-r ${stat.color} bg-clip-text text-transparent mb-2 group-hover:scale-110 transition-transform duration-500`}>
@@ -119,11 +260,11 @@ const Home: React.FC = () => {
           <div className="text-center mb-20">
             <div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-full text-amber-600 text-sm font-semibold mb-8 shadow-lg">
               <span className="text-2xl">💎</span>
-              CURATED COLLECTION
+              DATABASE COLLECTION
             </div>
             <h2 className="text-5xl md:text-7xl font-black text-slate-900 mb-6">
               <span className="bg-gradient-to-r from-slate-800 via-slate-900 to-slate-800 bg-clip-text text-transparent">
-                Exclusive
+                Verified
               </span>
               <br />
               <span className="bg-gradient-to-r from-yellow-600 via-orange-600 to-yellow-600 bg-clip-text text-transparent">
@@ -131,58 +272,75 @@ const Home: React.FC = () => {
               </span>
             </h2>
             <p className="text-slate-600 text-lg max-w-2xl mx-auto leading-relaxed font-light">
-              Handpicked selection of premium properties featuring exceptional design, 
-              prime locations, and unparalleled luxury amenities.
+              Real properties from our database featuring accurate information, 
+              verified details, and professional management.
             </p>
           </div>
           
-          {/* Luxury Properties Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 mb-20">
-            {featuredProperties.map((property, index) => (
-              <div 
-                key={property.id} 
-                className="group relative"
-                style={{ 
-                  animation: `luxuryFadeIn 0.8s ease-out ${index * 0.2}s both`
-                }}
-              >
-                {/* Glow Effect */}
-                <div className="absolute -inset-4 bg-gradient-to-r from-yellow-400/20 via-purple-400/20 to-blue-400/20 rounded-3xl opacity-0 group-hover:opacity-100 blur-xl transition-all duration-700"></div>
-                
-                {/* Card Container */}
-                <div className="relative bg-white rounded-3xl overflow-hidden shadow-2xl group-hover:shadow-3xl transition-all duration-500 transform group-hover:-translate-y-4 border border-slate-200">
-                  {/* Premium Badge */}
-                  <div className="absolute top-4 left-4 z-20">
-                    <div className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
-                      ⚡ PREMIUM
+          {/* Loading State */}
+          {loading ? (
+            <div className="flex justify-center items-center py-20">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+              <span className="ml-3 text-gray-600">Loading properties...</span>
+            </div>
+          ) : (
+            <>
+              {/* Luxury Properties Grid */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 mb-20">
+                {featuredProperties.map((property, index) => (
+                  <div 
+                    key={property.id} 
+                    className="group relative"
+                    style={{ 
+                      animation: `luxuryFadeIn 0.8s ease-out ${index * 0.2}s both`
+                    }}
+                  >
+                    {/* Glow Effect */}
+                    <div className="absolute -inset-4 bg-gradient-to-r from-yellow-400/20 via-purple-400/20 to-blue-400/20 rounded-3xl opacity-0 group-hover:opacity-100 blur-xl transition-all duration-700"></div>
+                    
+                    {/* Card Container */}
+                    <div className="relative bg-white rounded-3xl overflow-hidden shadow-2xl group-hover:shadow-3xl transition-all duration-500 transform group-hover:-translate-y-4 border border-slate-200">
+                      {/* Premium Badge */}
+                      <div className="absolute top-4 left-4 z-20">
+                        <div className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
+                          {property.is_featured ? '⭐ PREMIUM' : '💎 VERIFIED'}
+                        </div>
+                      </div>
+                      
+                      {/* Database Badge */}
+                      <div className="absolute top-4 right-4 z-20">
+                        <div className="bg-gradient-to-r from-green-500 to-blue-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+                          REAL DATA
+                        </div>
+                      </div>
+                      
+                      <PropertyCard property={property} />
                     </div>
                   </div>
-                  
-                  <PropertyCard property={property} />
-                </div>
+                ))}
               </div>
-            ))}
-          </div>
-          
-          {/* Luxury View All Button */}
-          <div className="text-center">
-            <Link 
-              to="/properties" 
-              className="group relative inline-flex items-center gap-4 px-12 py-6 bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 text-white rounded-2xl transition-all duration-500 transform hover:scale-105 shadow-2xl hover:shadow-3xl font-bold text-lg overflow-hidden"
-            >
-              {/* Animated Background */}
-              <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/20 via-purple-500/20 to-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               
-              {/* Shine Effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-              
-              <span className="relative flex items-center gap-3">
-                <span className="text-2xl">✨</span>
-                Explore All Properties
-                <span className="text-2xl group-hover:translate-x-2 transition-transform duration-300">→</span>
-              </span>
-            </Link>
-          </div>
+              {/* Luxury View All Button */}
+              <div className="text-center">
+                <Link 
+                  to="/properties" 
+                  className="group relative inline-flex items-center gap-4 px-12 py-6 bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 text-white rounded-2xl transition-all duration-500 transform hover:scale-105 shadow-2xl hover:shadow-3xl font-bold text-lg overflow-hidden"
+                >
+                  {/* Animated Background */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/20 via-purple-500/20 to-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  
+                  {/* Shine Effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                  
+                  <span className="relative flex items-center gap-3">
+                    <span className="text-2xl">📊</span>
+                    Explore All Properties
+                    <span className="text-2xl group-hover:translate-x-2 transition-transform duration-300">→</span>
+                  </span>
+                </Link>
+              </div>
+            </>
+          )}
         </div>
       </section>
 
@@ -195,15 +353,15 @@ const Home: React.FC = () => {
           <div className="text-center mb-20">
             <div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-full text-indigo-600 text-sm font-semibold mb-8 shadow-lg">
               <span className="text-2xl">🌟</span>
-              THE LUXURY DIFFERENCE
+              THE DATABASE DIFFERENCE
             </div>
             <h2 className="text-5xl md:text-7xl font-black text-slate-900 mb-6">
               <span className="bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-                Unparalleled
+                Real Data
               </span>
               <br />
               <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                Experience
+                Real Value
               </span>
             </h2>
           </div>
@@ -248,7 +406,7 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Luxury Testimonials */}
+      {/* Database Stats Section */}
       <section className="py-32 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-800 relative overflow-hidden">
         {/* Diamond Pattern */}
         <div className="absolute inset-0 opacity-[0.03] bg-[length:80px_80px] bg-[linear-gradient(45deg,transparent_45%,#ffffff_50%,transparent_55%)]"></div>
@@ -256,16 +414,16 @@ const Home: React.FC = () => {
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-20">
             <div className="inline-flex items-center gap-3 px-6 py-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white/90 text-sm font-light mb-8">
-              <span className="text-2xl">💫</span>
-              CLIENT TESTIMONIALS
+              <span className="text-2xl">📊</span>
+              DATABASE INSIGHTS
             </div>
             <h2 className="text-5xl md:text-7xl font-black text-white mb-6">
               <span className="bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-                Voices of
+                Real Numbers
               </span>
               <br />
               <span className="bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">
-                Excellence
+                Real Value
               </span>
             </h2>
           </div>
@@ -273,67 +431,51 @@ const Home: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {[
               {
-                name: "Alexander Montgomery",
-                role: "Luxury Home Investor",
-                image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&h=150&fit=crop&crop=face",
-                comment: "PropertyKu redefined luxury real estate for me. Their attention to detail and exclusive listings are unmatched.",
-                rating: 5
+                icon: '🏠',
+                title: 'Total Properties',
+                value: '3+',
+                description: 'Verified listings in our database'
               },
               {
-                name: "Isabella Rodriguez",
-                role: "Penthouse Owner",
-                image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face",
-                comment: "From the initial consultation to the final transaction, every moment felt premium and personalized.",
-                rating: 5
+                icon: '💰',
+                title: 'Portfolio Value',
+                value: 'Rp 4.2M+',
+                description: 'Total property value'
               },
               {
-                name: "James Vanderbilt",
-                role: "Real Estate Collector",
-                image: "https://images.unsplash.com/photo-1552058544-f2b08422138a?w=150&h=150&fit=crop&crop=face",
-                comment: "The caliber of properties and professionalism of their elite agents is simply extraordinary.",
-                rating: 5
+                icon: '📍',
+                title: 'Cities Covered',
+                value: '2+',
+                description: 'Prime locations available'
               }
-            ].map((testimonial, index) => (
+            ].map((stat, index) => (
               <div 
                 key={index}
-                className="group relative bg-white/10 backdrop-blur-xl rounded-3xl p-10 border border-white/20 transform hover:scale-105 transition-all duration-500 overflow-hidden"
+                className="group relative bg-white/10 backdrop-blur-xl rounded-3xl p-10 border border-white/20 transform hover:scale-105 transition-all duration-500 overflow-hidden text-center"
               >
                 {/* Gradient Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/5 via-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
                 
-                {/* Quote Icon */}
-                <div className="absolute top-6 right-6 text-8xl text-white/5 group-hover:text-white/10 transition-all duration-500">"</div>
-                
                 <div className="relative">
-                  {/* Client Info */}
-                  <div className="flex items-center mb-8">
-                    <div className="relative">
-                      <img
-                        src={testimonial.image}
-                        alt={testimonial.name}
-                        className="w-20 h-20 rounded-2xl object-cover border-2 border-yellow-400/50 shadow-2xl"
-                      />
-                      <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full border-2 border-slate-900 flex items-center justify-center">
-                        <span className="text-white text-xs font-bold">✓</span>
-                      </div>
-                    </div>
-                    <div className="ml-6">
-                      <h4 className="font-bold text-xl text-white">{testimonial.name}</h4>
-                      <p className="text-yellow-300 text-sm font-light tracking-widest uppercase">{testimonial.role}</p>
-                    </div>
+                  {/* Icon */}
+                  <div className="text-6xl mb-6 group-hover:scale-110 transition-transform duration-500">
+                    {stat.icon}
                   </div>
                   
-                  {/* Testimonial Text */}
-                  <p className="text-gray-200 mb-8 leading-relaxed font-light text-lg italic">
-                    "{testimonial.comment}"
+                  {/* Value */}
+                  <div className="text-4xl font-black text-yellow-400 mb-4">
+                    {stat.value}
+                  </div>
+                  
+                  {/* Title */}
+                  <h3 className="text-xl font-bold text-white mb-3">
+                    {stat.title}
+                  </h3>
+                  
+                  {/* Description */}
+                  <p className="text-gray-300 leading-relaxed font-light">
+                    {stat.description}
                   </p>
-                  
-                  {/* Luxury Rating */}
-                  <div className="flex gap-2">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <span key={i} className="text-2xl text-yellow-400">★</span>
-                    ))}
-                  </div>
                 </div>
               </div>
             ))}
@@ -356,56 +498,56 @@ const Home: React.FC = () => {
             {/* Luxury Badge */}
             <div className="inline-flex items-center gap-4 px-8 py-4 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full text-white/90 text-sm font-light mb-12">
               <span className="text-yellow-400 text-2xl">✨</span>
-              <span className="tracking-widest uppercase">Begin Your Luxury Journey</span>
+              <span className="tracking-widest uppercase">Begin Your Property Journey</span>
               <span className="text-yellow-400 text-2xl">✨</span>
             </div>
             
             {/* Main Headline */}
             <h2 className="text-6xl md:text-8xl font-black text-white mb-12 leading-none">
               <span className="bg-gradient-to-r from-white via-gray-200 to-white bg-clip-text text-transparent">
-                READY FOR
+                READY TO
               </span>
               <br />
               <span className="bg-gradient-to-r from-yellow-300 via-orange-300 to-yellow-400 bg-clip-text text-transparent">
-                EXCLUSIVE
+                EXPLORE
               </span>
               <br />
               <span className="bg-gradient-to-r from-purple-300 via-pink-300 to-purple-400 bg-clip-text text-transparent">
-                LIVING?
+                REAL DATA?
               </span>
             </h2>
             
             {/* Subtitle */}
             <p className="text-xl md:text-2xl text-gray-300 mb-16 max-w-4xl mx-auto leading-relaxed font-light tracking-wide">
-              Join our elite community of discerning individuals who have discovered 
-              the pinnacle of luxury real estate. Your dream property awaits.
+              Discover verified properties with accurate information from our database. 
+              Your next investment or dream home is just a click away.
             </p>
             
             {/* Luxury CTA Buttons */}
             <div className="flex flex-col lg:flex-row justify-center items-center gap-8 mb-20">
               <Link
-                to="/register"
+                to="/properties"
                 className="group relative bg-gradient-to-r from-yellow-400 via-orange-400 to-yellow-500 text-slate-900 px-16 py-8 rounded-3xl transition-all duration-500 transform hover:scale-105 font-black text-xl shadow-2xl hover:shadow-3xl overflow-hidden min-w-[300px]"
               >
                 {/* Shine Effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
                 
                 <span className="relative flex items-center justify-center gap-4">
-                  <span className="text-3xl">🚀</span>
-                  START YOUR JOURNEY
+                  <span className="text-3xl">🔍</span>
+                  BROWSE PROPERTIES
                 </span>
               </Link>
               
               <Link
-                to="/properties"
+                to="/about"
                 className="group relative border-2 border-white/30 text-white px-16 py-8 rounded-3xl transition-all duration-500 transform hover:scale-105 font-bold text-xl backdrop-blur-xl overflow-hidden min-w-[300px]"
               >
                 {/* Hover Background */}
                 <div className="absolute inset-0 bg-white transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
                 
                 <span className="relative flex items-center justify-center gap-4">
-                  <span className="text-2xl">🔍</span>
-                  BROWSE COLLECTION
+                  <span className="text-2xl">ℹ️</span>
+                  LEARN MORE
                   <span className="text-2xl group-hover:translate-x-2 transition-transform duration-300">→</span>
                 </span>
               </Link>
@@ -414,10 +556,10 @@ const Home: React.FC = () => {
             {/* Luxury Trust Indicators */}
             <div className="flex flex-wrap justify-center items-center gap-12 pt-16 border-t border-white/10">
               {[
-                { icon: '💎', text: 'Premium Verified' },
-                { icon: '🛡️', text: 'Secure Transactions' },
-                { icon: '👑', text: 'Elite Service' },
-                { icon: '⭐', text: '5-Star Rated' }
+                { icon: '💾', text: 'Database Powered' },
+                { icon: '✅', text: 'Verified Data' },
+                { icon: '🔒', text: 'Secure Platform' },
+                { icon: '📊', text: 'Real Analytics' }
               ].map((badge, index) => (
                 <div 
                   key={index}

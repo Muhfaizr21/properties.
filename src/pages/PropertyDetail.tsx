@@ -1,15 +1,146 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import { featuredProperties } from '../data/mockData';
+import { Property } from '../types';
 
 const PropertyDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const propertyId = parseInt(id || '1');
-  const property = featuredProperties.find(p => p.id === propertyId);
+  const [property, setProperty] = useState<Property | null>(null);
+  const [loading, setLoading] = useState(true);
   const [activeImage, setActiveImage] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
+
+  useEffect(() => {
+    fetchProperty();
+  }, [propertyId]);
+
+  const fetchProperty = async () => {
+    try {
+      setLoading(true);
+      // Simulate API call - replace with actual API call
+      const sampleProperties = getSampleProperties();
+      const foundProperty = sampleProperties.find(p => p.id === propertyId);
+      setProperty(foundProperty || null);
+    } catch (error) {
+      console.error('Error fetching property:', error);
+      setProperty(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getSampleProperties = (): Property[] => {
+    return [
+      {
+        id: 1,
+        title: 'Luxury Villa in Bali',
+        description: 'Beautiful luxury villa with private pool and ocean view. Located in the heart of Seminyak, this property offers premium amenities and breathtaking views. Perfect for both personal use and investment opportunities.',
+        price: 2500000000,
+        type: 'sale',
+        category: 'house',
+        address: 'Jl. Raya Seminyak No. 123',
+        city: 'Bali',
+        district: 'Seminyak',
+        bed_rooms: 4,
+        bath_rooms: 3,
+        land_size: 500,
+        building_size: 350,
+        images: [
+          '/images/properties/villa-1.jpg',
+          '/images/properties/villa-2.jpg',
+          '/images/properties/villa-3.jpg',
+          '/images/properties/villa-4.jpg'
+        ],
+        facilities: ['Swimming Pool', 'Garden', 'Security', 'Parking', 'Private Beach Access', 'Smart Home System'],
+        agent: {
+          id: 2,
+          name: 'John Agent',
+          email: 'john@agent.com',
+          phone: '+628123456789',
+          avatar: '/images/agents/agent-1.jpg',
+          agency: 'Premium Real Estate'
+        },
+        is_featured: true,
+        created_at: '2025-11-26T13:10:07.000Z'
+      },
+      {
+        id: 2,
+        title: 'Modern Apartment in Jakarta',
+        description: 'Brand new apartment in central business district with state-of-the-art facilities and panoramic city views. Located in SCBD area with easy access to business centers and luxury shopping malls.',
+        price: 1200000000,
+        type: 'sale',
+        category: 'apartment',
+        address: 'SCBD Tower, Jakarta',
+        city: 'Jakarta',
+        district: 'SCBD',
+        bed_rooms: 2,
+        bath_rooms: 2,
+        land_size: 0,
+        building_size: 75,
+        images: [
+          '/images/properties/apartment-1.jpg',
+          '/images/properties/apartment-2.jpg',
+          '/images/properties/apartment-3.jpg'
+        ],
+        facilities: ['Gym', 'Swimming Pool', 'Security', 'Parking', 'Concierge', 'Rooftop Garden'],
+        agent: {
+          id: 2,
+          name: 'John Agent',
+          email: 'john@agent.com',
+          phone: '+628123456789',
+          avatar: '/images/agents/agent-1.jpg',
+          agency: 'Premium Real Estate'
+        },
+        is_featured: true,
+        created_at: '2025-11-26T13:10:07.000Z'
+      },
+      {
+        id: 3,
+        title: 'Land for Investment',
+        description: 'Prime location land for commercial development in the heart of Jakarta business district. Perfect for building commercial complexes, office towers, or mixed-use developments with high ROI potential.',
+        price: 500000000,
+        type: 'sale',
+        category: 'land',
+        address: 'Jl. Sudirman Kav. 1',
+        city: 'Jakarta',
+        district: 'Sudirman',
+        bed_rooms: 0,
+        bath_rooms: 0,
+        land_size: 300,
+        building_size: 0,
+        images: [
+          '/images/properties/land-1.jpg',
+          '/images/properties/land-2.jpg'
+        ],
+        facilities: ['Prime Location', 'Commercial Zoning', 'Easy Access', 'Development Ready'],
+        agent: {
+          id: 2,
+          name: 'John Agent',
+          email: 'john@agent.com',
+          phone: '+628123456789',
+          avatar: '/images/agents/agent-1.jpg',
+          agency: 'Premium Real Estate'
+        },
+        is_featured: false,
+        created_at: '2025-11-26T13:10:07.000Z'
+      }
+    ];
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
+        <Header />
+        <div className="flex justify-center items-center h-96">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <span className="ml-3 text-gray-600">Loading property details...</span>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!property) {
     return (
@@ -47,9 +178,11 @@ const PropertyDetail: React.FC = () => {
     { icon: '🛁', label: `${property.bath_rooms} Bathrooms`, value: property.bath_rooms },
     { icon: '📐', label: 'Building Size', value: `${property.building_size} m²` },
     { icon: '🏠', label: 'Land Size', value: `${property.land_size} m²` },
-    { icon: '🏢', label: 'Floors', value: '3' },
-    { icon: '📅', label: 'Year Built', value: '2020' },
+    { icon: '🏢', label: 'Property Type', value: property.category.charAt(0).toUpperCase() + property.category.slice(1) },
+    { icon: '💰', label: 'Transaction', value: property.type === 'sale' ? 'For Sale' : 'For Rent' },
   ];
+
+  const pricePerM2 = property.building_size > 0 ? property.price / property.building_size : 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
@@ -116,7 +249,7 @@ const PropertyDetail: React.FC = () => {
                   </button>
                   <button className="w-full flex items-center justify-center gap-2 border border-slate-300 text-slate-700 py-3 rounded-xl hover:bg-slate-50 transition-all duration-300 font-semibold">
                     <span>📷</span>
-                    View All Photos
+                    View All Photos ({property.images.length})
                   </button>
                 </div>
               </div>
@@ -302,20 +435,26 @@ const PropertyDetail: React.FC = () => {
                 </h3>
                 <div className="space-y-4">
                   <div className="flex justify-between items-center p-3 bg-white/10 rounded-xl">
-                    <span className="text-gray-300">Views Today</span>
-                    <span className="font-black text-yellow-400">24</span>
-                  </div>
-                  <div className="flex justify-between items-center p-3 bg-white/10 rounded-xl">
-                    <span className="text-gray-300">Total Views</span>
-                    <span className="font-black text-yellow-400">1.2K</span>
-                  </div>
-                  <div className="flex justify-between items-center p-3 bg-white/10 rounded-xl">
-                    <span className="text-gray-300">Days Listed</span>
-                    <span className="font-black text-yellow-400">5</span>
+                    <span className="text-gray-300">Property ID</span>
+                    <span className="font-black text-yellow-400">PROP-{property.id.toString().padStart(4, '0')}</span>
                   </div>
                   <div className="flex justify-between items-center p-3 bg-white/10 rounded-xl">
                     <span className="text-gray-300">Price per m²</span>
-                    <span className="font-black text-yellow-400">Rp 12M</span>
+                    <span className="font-black text-yellow-400">
+                      {pricePerM2 > 0 ? formatPrice(pricePerM2) : 'N/A'}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center p-3 bg-white/10 rounded-xl">
+                    <span className="text-gray-300">Status</span>
+                    <span className="font-black text-yellow-400">
+                      {property.is_featured ? 'Premium' : 'Standard'}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center p-3 bg-white/10 rounded-xl">
+                    <span className="text-gray-300">Listed Date</span>
+                    <span className="font-black text-yellow-400">
+                      {new Date(property.created_at).toLocaleDateString('id-ID')}
+                    </span>
                   </div>
                 </div>
               </div>
